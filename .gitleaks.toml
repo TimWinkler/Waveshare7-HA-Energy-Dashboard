@@ -1,0 +1,60 @@
+# Gitleaks Configuration for Waveshare Energy Dashboard
+# https://github.com/gitleaks/gitleaks
+#
+# This config customizes secret detection for the project.
+# Run manually: gitleaks detect --source . --verbose
+# Pre-commit:   gitleaks protect --staged
+
+title = "Waveshare Energy Dashboard Gitleaks Config"
+
+[extend]
+# Use default gitleaks rules as base
+useDefault = true
+
+[allowlist]
+description = "Project allowlist"
+
+# Files that commonly contain example/placeholder values
+paths = [
+    '''\.example$''',
+    '''\.sample$''',
+    '''\.md$''',
+    '''\.rst$''',
+    '''config\.h\.example$''',
+]
+
+# Specific patterns to ignore (false positives)
+regexes = [
+    # Example/placeholder passwords in config files
+    '''YOUR_WIFI_PASSWORD''',
+    '''YOUR_MQTT_PASSWORD''',
+    '''YOUR_WIFI_SSID''',
+    '''YOUR_HA_IP''',
+    '''YOUR_MQTT_USER''',
+    '''changeme''',
+    '''your[-_]?secret[-_]?here''',
+]
+
+# Stopwords - common false positive strings
+stopwords = [
+    "example",
+    "placeholder",
+    "changeme",
+    "your-secret",
+    "YOUR_",
+    "dummy",
+    "fake",
+    "test",
+    "sample",
+]
+
+# Rule-specific overrides
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key - reduce false positives"
+entropy = 4.0
+
+[[rules]]
+id = "private-key"
+description = "Private Key detection"
+entropy = 3.5

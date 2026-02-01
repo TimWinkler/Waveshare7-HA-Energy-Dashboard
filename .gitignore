@@ -1,0 +1,23 @@
+# Build artifacts
+build/
+sdkconfig
+sdkconfig.old
+
+# Managed components (downloaded automatically)
+managed_components/
+
+# Dependencies lock (regenerated)
+dependencies.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Secrets - NEVER commit real credentials
+main/config.h
+secrets.h

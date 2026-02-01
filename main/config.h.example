@@ -1,0 +1,134 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// =============================================================================
+// WiFi Configuration - CHANGE THESE VALUES
+// =============================================================================
+#define WIFI_SSID           "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD       "YOUR_WIFI_PASSWORD"
+
+// =============================================================================
+// MQTT Configuration - CHANGE THESE VALUES
+// =============================================================================
+#define MQTT_BROKER_URI     "mqtt://YOUR_HA_IP:1883"
+#define MQTT_USERNAME       "YOUR_MQTT_USER"
+#define MQTT_PASSWORD       "YOUR_MQTT_PASSWORD"
+
+// =============================================================================
+// MQTT Topics - vzlogger power data
+// =============================================================================
+#define TOPIC_CURRENT_POWER     "vzlogger/data/chn0/raw"
+#define TOPIC_TOTAL_POWER       "vzlogger/data/chn1/raw"
+
+// Daily values from Home Assistant MQTT Statestream (ha/ base topic)
+#define TOPIC_GAS_CONSUMPTION   "ha/sensor/daily_gas_consumption/state"
+#define TOPIC_GAS_COST          "ha/sensor/gasverbrauch_cost_2/state"
+#define TOPIC_SOLAR_DAILY       "ha/sensor/dtu_ac_daily_energy/state"
+#define TOPIC_SOLAR_POWER       "ha/sensor/inverter_ac_power/state"
+#define TOPIC_GRID_DAILY        "ha/sensor/daily_grid_energy/state"
+
+// Weather/Temperature from Home Assistant MQTT Statestream
+#define TOPIC_WEATHER_TEMP      "ha/sensor/weather_temperature/state"
+#define TOPIC_WEATHER_HUMIDITY  "ha/sensor/weather_humidity/state"
+#define TOPIC_TEMP_INDOOR       "ha/sensor/YOUR_INDOOR_TEMP_SENSOR/state"
+#define TOPIC_HUMIDITY_INDOOR   "ha/sensor/YOUR_INDOOR_HUMIDITY_SENSOR/state"
+
+// Weather condition
+#define TOPIC_WEATHER_CONDITION "ha/sensor/weather_condition/state"
+
+// Additional sensors from MQTT Statestream
+#define TOPIC_WATER_DAILY       "ha/sensor/water_water_usage/state"
+#define TOPIC_WATER_TOTAL       "ha/sensor/water_total_water_usage/state"
+
+// Year-to-Date (YTD) values from utility_meter sensors
+#define TOPIC_GRID_YTD          "ha/sensor/yearly_grid_energy/state"
+#define TOPIC_GAS_YTD           "ha/sensor/yearly_gas/state"
+#define TOPIC_SOLAR_YTD         "ha/sensor/yearly_solar_energy/state"
+#define TOPIC_WATER_YTD         "ha/sensor/yearly_water/state"
+
+// Extended weather data
+#define TOPIC_WEATHER_PRESSURE  "ha/sensor/weather_pressure/state"
+#define TOPIC_WEATHER_WIND_SPEED "ha/sensor/weather_wind_speed/state"
+#define TOPIC_WEATHER_WIND_BEARING "ha/sensor/weather_wind_bearing/state"
+#define TOPIC_SUN_RISE          "ha/sensor/sun_rise/state"
+#define TOPIC_SUN_SET           "ha/sensor/sun_set/state"
+
+// 7-day forecast
+#define TOPIC_FORECAST_0_HIGH   "ha/sensor/forecast_0_high/state"
+#define TOPIC_FORECAST_0_LOW    "ha/sensor/forecast_0_low/state"
+#define TOPIC_FORECAST_0_PRECIP "ha/sensor/forecast_0_precip/state"
+#define TOPIC_FORECAST_0_COND   "ha/sensor/forecast_day_0/state"
+#define TOPIC_FORECAST_1_HIGH   "ha/sensor/forecast_1_high/state"
+#define TOPIC_FORECAST_1_LOW    "ha/sensor/forecast_1_low/state"
+#define TOPIC_FORECAST_1_PRECIP "ha/sensor/forecast_1_precip/state"
+#define TOPIC_FORECAST_1_COND   "ha/sensor/forecast_day_1/state"
+#define TOPIC_FORECAST_2_HIGH   "ha/sensor/forecast_2_high/state"
+#define TOPIC_FORECAST_2_LOW    "ha/sensor/forecast_2_low/state"
+#define TOPIC_FORECAST_2_PRECIP "ha/sensor/forecast_2_precip/state"
+#define TOPIC_FORECAST_2_COND   "ha/sensor/forecast_day_2/state"
+#define TOPIC_FORECAST_3_HIGH   "ha/sensor/forecast_3_high/state"
+#define TOPIC_FORECAST_3_LOW    "ha/sensor/forecast_3_low/state"
+#define TOPIC_FORECAST_3_PRECIP "ha/sensor/forecast_3_precip/state"
+#define TOPIC_FORECAST_3_COND   "ha/sensor/forecast_day_3/state"
+#define TOPIC_FORECAST_4_HIGH   "ha/sensor/forecast_4_high/state"
+#define TOPIC_FORECAST_4_LOW    "ha/sensor/forecast_4_low/state"
+#define TOPIC_FORECAST_4_PRECIP "ha/sensor/forecast_4_precip/state"
+#define TOPIC_FORECAST_4_COND   "ha/sensor/forecast_day_4/state"
+#define TOPIC_FORECAST_5_HIGH   "ha/sensor/forecast_5_high/state"
+#define TOPIC_FORECAST_5_LOW    "ha/sensor/forecast_5_low/state"
+#define TOPIC_FORECAST_5_PRECIP "ha/sensor/forecast_5_precip/state"
+#define TOPIC_FORECAST_5_COND   "ha/sensor/forecast_day_5/state"
+#define TOPIC_FORECAST_6_HIGH   "ha/sensor/forecast_6_high/state"
+#define TOPIC_FORECAST_6_LOW    "ha/sensor/forecast_6_low/state"
+#define TOPIC_FORECAST_6_PRECIP "ha/sensor/forecast_6_precip/state"
+#define TOPIC_FORECAST_6_COND   "ha/sensor/forecast_day_6/state"
+
+// =============================================================================
+// Display Configuration (Waveshare ESP32-S3-Touch-LCD-7 rev 1.2)
+// DO NOT CHANGE unless using different hardware
+// =============================================================================
+#define LCD_WIDTH           800
+#define LCD_HEIGHT          480
+#define LCD_BITS_PER_PIXEL  16
+
+// RGB LCD Pins (for Waveshare 7" LCD rev 1.2)
+#define LCD_PIN_HSYNC       46
+#define LCD_PIN_VSYNC       3
+#define LCD_PIN_DE          5
+#define LCD_PIN_PCLK        7
+#define LCD_PIN_DISP        -1
+
+// RGB LCD Data pins - RGB565 format
+#define LCD_PIN_DATA0       14  // B3
+#define LCD_PIN_DATA1       38  // B4
+#define LCD_PIN_DATA2       18  // B5
+#define LCD_PIN_DATA3       17  // B6
+#define LCD_PIN_DATA4       10  // B7
+#define LCD_PIN_DATA5       39  // G2
+#define LCD_PIN_DATA6       0   // G3
+#define LCD_PIN_DATA7       45  // G4
+#define LCD_PIN_DATA8       48  // G5
+#define LCD_PIN_DATA9       47  // G6
+#define LCD_PIN_DATA10      21  // G7
+#define LCD_PIN_DATA11      1   // R3
+#define LCD_PIN_DATA12      2   // R4
+#define LCD_PIN_DATA13      42  // R5
+#define LCD_PIN_DATA14      41  // R6
+#define LCD_PIN_DATA15      40  // R7
+
+// Touch I2C pins (GT911)
+#define TOUCH_I2C_SDA       8
+#define TOUCH_I2C_SCL       9
+#define TOUCH_INT_PIN       4
+#define TOUCH_RST_PIN       -1
+
+// LCD Timing parameters
+#define LCD_HSYNC_BACK_PORCH    8
+#define LCD_HSYNC_FRONT_PORCH   8
+#define LCD_HSYNC_PULSE_WIDTH   4
+#define LCD_VSYNC_BACK_PORCH    16
+#define LCD_VSYNC_FRONT_PORCH   16
+#define LCD_VSYNC_PULSE_WIDTH   4
+#define LCD_PCLK_HZ             (16 * 1000 * 1000)
+
+#endif // CONFIG_H
