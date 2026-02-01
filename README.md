@@ -2,6 +2,7 @@
 
 An ESP-IDF powered energy monitoring dashboard for the **Waveshare ESP32-S3-Touch-LCD-7** display, integrating with Home Assistant via MQTT.
 
+[![Build](https://github.com/TimWinkler/Waveshare7-HA-Energy-Dashboard/actions/workflows/build.yml/badge.svg)](https://github.com/TimWinkler/Waveshare7-HA-Energy-Dashboard/actions/workflows/build.yml)
 ![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.4-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Hardware](https://img.shields.io/badge/Hardware-ESP32--S3-red)
