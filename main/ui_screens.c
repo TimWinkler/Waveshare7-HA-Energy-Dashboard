@@ -541,7 +541,7 @@ void ui_create_screen_ytd(void)
                       &ui_widgets.label_solar_ytd, &ui_widgets.label_solar_cost_ytd);
 
     create_ytd_column(screen_ytd, col_x[2], col_y, col_width, col_height,
-                      "GAS", COLOR_GAS, LV_SYMBOL_WARNING, "m\xc2\xb3",
+                      "GAS", COLOR_GAS, LV_SYMBOL_WARNING, "m3",
                       &ui_widgets.label_gas_ytd, &ui_widgets.label_gas_cost_ytd);
 
     create_ytd_column(screen_ytd, col_x[3], col_y, col_width, col_height,
