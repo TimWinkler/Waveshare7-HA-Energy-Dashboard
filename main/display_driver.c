@@ -33,7 +33,7 @@ static lv_disp_draw_buf_t s_disp_buf;
 static lv_disp_drv_t s_disp_drv;
 
 // Double buffering
-#define LVGL_BUF_HEIGHT 40
+#define LVGL_BUF_HEIGHT 100
 static lv_color_t *s_buf1 = NULL;
 static lv_color_t *s_buf2 = NULL;
 
@@ -127,8 +127,8 @@ esp_err_t display_init(void)
         },
         .data_width = 16,
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
-        .num_fbs = 2,
-        .bounce_buffer_size_px = LCD_WIDTH * 20,
+        .num_fbs = 1,
+        .bounce_buffer_size_px = LCD_WIDTH * 10,
         .psram_trans_align = 64,
         .hsync_gpio_num = LCD_PIN_HSYNC,
         .vsync_gpio_num = LCD_PIN_VSYNC,
