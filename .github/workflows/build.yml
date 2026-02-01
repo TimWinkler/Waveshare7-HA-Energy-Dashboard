@@ -31,13 +31,3 @@ jobs:
           . $IDF_PATH/export.sh
           idf.py set-target esp32s3
           idf.py build
-
-      - name: Upload firmware artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware
-          path: |
-            build/*.bin
-            build/bootloader/*.bin
-            build/partition_table/*.bin
-          retention-days: 30
