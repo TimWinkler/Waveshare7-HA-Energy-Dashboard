@@ -127,8 +127,8 @@ esp_err_t display_init(void)
         },
         .data_width = 16,
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
-        .num_fbs = 1,
-        .bounce_buffer_size_px = LCD_WIDTH * 10,
+        .num_fbs = 2,
+        .bounce_buffer_size_px = LCD_WIDTH * 20,
         .psram_trans_align = 64,
         .hsync_gpio_num = LCD_PIN_HSYNC,
         .vsync_gpio_num = LCD_PIN_VSYNC,
@@ -147,6 +147,9 @@ esp_err_t display_init(void)
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &s_panel));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(s_panel));
     ESP_ERROR_CHECK(esp_lcd_panel_init(s_panel));
+
+    // Fix color inversion for Waveshare 7" display
+    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(s_panel, false));
 
     // Initialize LVGL
     lv_init();
