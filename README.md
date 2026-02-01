@@ -31,36 +31,40 @@ This project turns the Waveshare 7-inch touchscreen into a wall-mounted energy d
 | MCU | ESP32-S3 dual-core |
 | Connectivity | WiFi 802.11 b/g/n |
 
-## Requirements
+## Development Setup
 
-- **ESP-IDF v5.4+** (DevContainer provided)
-- **Home Assistant** with:
-  - MQTT broker (Mosquitto recommended)
-  - [MQTT Statestream](https://www.home-assistant.io/integrations/mqtt_statestream/) integration
-  - Utility meter sensors for YTD tracking
+Development uses a **DevContainer** with ESP-IDF v5.4 pre-installed. This ensures a consistent build environment without manual toolchain setup.
 
-## Quick Start
+### Prerequisites
 
-### 1. Clone the Repository
+- [Docker](https://www.docker.com/get-started) installed and running
+- [VS Code](https://code.visualstudio.com/) with the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
+- Waveshare ESP32-S3-Touch-LCD-7 connected via USB
+
+### 1. Clone and Open in DevContainer
 
 ```bash
 git clone https://github.com/TimWinkler/Waveshare7-HA-Energy-Dashboard.git
 cd Waveshare7-HA-Energy-Dashboard
+code .
 ```
 
-### 2. Open in DevContainer (Recommended)
+When VS Code opens, click **"Reopen in Container"** in the notification (or use `Ctrl+Shift+P` → "Dev Containers: Reopen in Container").
 
-Open in VS Code and select **"Reopen in Container"** when prompted. This provides a complete ESP-IDF development environment.
+The container will build with:
+- ESP-IDF v5.4 toolchain
+- All required build tools
+- USB device passthrough (`/dev/ttyACM0`)
 
-### 3. Setup and Configure
+### 2. Run Interactive Setup
 
-Run the interactive setup:
+Once inside the DevContainer terminal:
 
 ```bash
 ./build.sh setup
 ```
 
-You'll be prompted to enter:
+The setup wizard prompts for your credentials:
 
 ```
 === WiFi Configuration ===
@@ -73,26 +77,41 @@ MQTT Username [mqtt]: mqtt
 MQTT Password: ********
 ```
 
-The setup will:
-1. Create `main/config.h` from the template
-2. Configure your WiFi and MQTT credentials
-3. Set the ESP32-S3 as build target
+This creates `main/config.h` with your settings and configures the ESP32-S3 target.
 
-> **Note:** To reconfigure later, run `./build.sh setup` again.
-
-### 4. Build and Flash
+### 3. Build and Flash
 
 ```bash
 ./build.sh run
 ```
 
-This builds, flashes, and opens the serial monitor. Press `Ctrl+]` to exit.
+This builds the firmware, flashes it to the device, and opens the serial monitor.
 
-Or use individual commands:
+Press `Ctrl+]` to exit the monitor.
+
+### Build Script Commands
+
+| Command | Description |
+|---------|-------------|
+| `./build.sh setup` | Interactive setup wizard |
+| `./build.sh build` | Build firmware |
+| `./build.sh flash` | Flash to device |
+| `./build.sh monitor` | Open serial monitor |
+| `./build.sh run` | Build + flash + monitor |
+| `./build.sh clean` | Clean build artifacts |
+| `./build.sh menuconfig` | ESP-IDF configuration menu |
+
+### USB Device Access
+
+The DevContainer is configured to access `/dev/ttyACM0`. If your device appears on a different port:
+
 ```bash
-./build.sh build    # Build only
-./build.sh flash    # Flash only
-./build.sh monitor  # Monitor only
+SERIAL_PORT=/dev/ttyUSB0 ./build.sh run
+```
+
+To check available ports inside the container:
+```bash
+ls -la /dev/ttyACM* /dev/ttyUSB*
 ```
 
 ## Home Assistant Setup
@@ -137,7 +156,7 @@ utility_meter:
 
 ## MQTT Topics
 
-The dashboard subscribes to these topics (configurable in `config.h`):
+The dashboard subscribes to these topics (configurable in `main/config.h`):
 
 | Data | Default Topic |
 |------|---------------|
@@ -154,59 +173,38 @@ The dashboard subscribes to these topics (configurable in `config.h`):
 ## Project Structure
 
 ```
-main/
-├── main.c              # Entry point, WiFi, SNTP, task creation
-├── config.h.example    # Configuration template (copy to config.h)
-├── display_driver.c/h  # LCD initialization, LVGL setup
-├── touch_driver.c/h    # GT911 touch controller
-├── ui.c/h              # UI coordination, screen switching
-├── ui_screens.c/h      # Screen layouts and widgets
-├── ui_styles.c/h       # Visual styling
-└── mqtt_handler.c/h    # MQTT client, sensor data parsing
+.
+├── .devcontainer/          # DevContainer configuration
+│   ├── Dockerfile          # ESP-IDF v5.4 base image
+│   └── devcontainer.json   # VS Code container settings
+├── main/
+│   ├── main.c              # Entry point, WiFi, SNTP, tasks
+│   ├── config.h.example    # Configuration template
+│   ├── display_driver.c/h  # LCD initialization, LVGL
+│   ├── touch_driver.c/h    # GT911 touch controller
+│   ├── ui.c/h              # Screen coordination
+│   ├── ui_screens.c/h      # Screen layouts and widgets
+│   ├── ui_styles.c/h       # Visual styling
+│   └── mqtt_handler.c/h    # MQTT client, data parsing
+├── build.sh                # Build/flash helper script
+├── CMakeLists.txt          # Project build config
+├── partitions.csv          # Flash partition table
+└── sdkconfig.defaults      # Default SDK configuration
 ```
 
-## Development
+## Configuration
 
-### Build Script
+### Credentials
 
-The included `build.sh` script simplifies common operations:
+Your `main/config.h` (created by setup) contains sensitive credentials and is excluded from git. To reconfigure:
 
 ```bash
-./build.sh setup      # First-time setup
-./build.sh build      # Build project
-./build.sh flash      # Flash to device
-./build.sh monitor    # Serial monitor (Ctrl+] to exit)
-./build.sh run        # Build, flash, and monitor
-./build.sh clean      # Clean build artifacts
-./build.sh menuconfig # ESP-IDF configuration menu
-./build.sh help       # Show all commands
+./build.sh setup
 ```
 
-Use a different serial port:
-```bash
-SERIAL_PORT=/dev/ttyUSB0 ./build.sh run
-```
+### Utility Rates
 
-### Direct ESP-IDF Commands
-
-```bash
-idf.py build                          # Build project
-idf.py -p /dev/ttyACM0 flash          # Flash to device
-idf.py -p /dev/ttyACM0 monitor        # Serial monitor
-idf.py -p /dev/ttyACM0 flash monitor  # Build, flash, and monitor
-idf.py fullclean                      # Clean build
-idf.py menuconfig                     # Configure project
-```
-
-### Security
-
-- `main/config.h` is in `.gitignore` to prevent credential commits
-- Pre-commit hook with [Gitleaks](https://github.com/gitleaks/gitleaks) for secret detection
-- Always use `config.h.example` as template
-
-## Cost Configuration
-
-Default utility rates (configurable in `ui_screens.c`):
+Default rates in `main/ui_screens.c`:
 
 | Utility | Rate |
 |---------|------|
@@ -214,6 +212,12 @@ Default utility rates (configurable in `ui_screens.c`):
 | Solar (savings) | 0.30 EUR/kWh |
 | Gas | 2.20 EUR/m³ |
 | Water | 5.00 EUR/m³ |
+
+## Security
+
+- `main/config.h` is in `.gitignore` — credentials are never committed
+- Pre-commit hook runs [Gitleaks](https://github.com/gitleaks/gitleaks) to detect accidental secret commits
+- Only `config.h.example` (with placeholders) is tracked in git
 
 ## License
 
