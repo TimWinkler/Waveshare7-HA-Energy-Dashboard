@@ -21,11 +21,12 @@ static const char *TAG = "display";
 #define CH422G_I2C_ADDR_SYS     0x24
 #define CH422G_I2C_ADDR_OUT     0x38
 
-// CH422G output bits
-#define CH422G_BIT_BACKLIGHT    0x01
-#define CH422G_BIT_LCD_RST      0x02
-#define CH422G_BIT_TOUCH_RST    0x04
-#define CH422G_BIT_LCD_EN       0x08
+// CH422G output bits (from working ESPHome config)
+// Pin 1 = Backlight, Pin 2 = LCD Enable, Pin 3 = LCD Reset, Pin 4 = Touch Reset
+#define CH422G_BIT_BACKLIGHT    0x02  // Pin 1 - Backlight
+#define CH422G_BIT_LCD_EN       0x04  // Pin 2 - LCD Enable
+#define CH422G_BIT_LCD_RST      0x08  // Pin 3 - LCD Reset
+#define CH422G_BIT_TOUCH_RST    0x10  // Pin 4 - Touch Reset
 
 static esp_lcd_panel_handle_t s_panel = NULL;
 static lv_disp_t *s_disp = NULL;
@@ -33,7 +34,7 @@ static lv_disp_draw_buf_t s_disp_buf;
 static lv_disp_drv_t s_disp_drv;
 
 // Double buffering
-#define LVGL_BUF_HEIGHT 100
+#define LVGL_BUF_HEIGHT 40
 static lv_color_t *s_buf1 = NULL;
 static lv_color_t *s_buf2 = NULL;
 
@@ -48,15 +49,76 @@ static void ch422g_write(uint8_t addr, uint8_t data)
     i2c_cmd_link_delete(cmd);
 }
 
+static void i2c_scan(void)
+{
+    ESP_LOGI(TAG, "Scanning I2C bus...");
+    for (uint8_t addr = 1; addr < 127; addr++) {
+        i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+        i2c_master_start(cmd);
+        i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_WRITE, true);
+        i2c_master_stop(cmd);
+        esp_err_t ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, pdMS_TO_TICKS(50));
+        i2c_cmd_link_delete(cmd);
+        if (ret == ESP_OK) {
+            ESP_LOGI(TAG, "I2C device found at 0x%02X", addr);
+        }
+    }
+    ESP_LOGI(TAG, "I2C scan complete");
+}
+
 static void ch422g_init(void)
 {
     // Configure CH422G as output mode
     ch422g_write(CH422G_I2C_ADDR_SYS, 0x01);
 
-    // Enable backlight, LCD reset high, touch reset high, LCD enable
+    // Correct pin mapping from ESPHome:
+    // Pin 1 (0x02) = Backlight
+    // Pin 2 (0x04) = LCD Enable
+    // Pin 3 (0x08) = LCD Reset
+    // Pin 4 (0x10) = Touch Reset
+
+    // === GT911 Reset Sequence (from ESPHome gt911_touchscreen.cpp) ===
+    // The GT911 address is determined by INT pin state during reset:
+    // INT LOW during reset rising edge -> address 0x5D
+    // INT HIGH during reset rising edge -> address 0x14
+
+    // Step 1: Set INT pin (GPIO4) to OUTPUT LOW for address 0x5D selection
+    gpio_config_t io_conf = {
+        .pin_bit_mask = (1ULL << 4),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+    };
+    gpio_config(&io_conf);
+    gpio_set_level(4, 0);
+    ESP_LOGI(TAG, "INT pin (GPIO4) set to OUTPUT LOW");
+
+    // Step 2: Assert Touch Reset LOW (keep backlight and LCD enable on)
+    ch422g_write(CH422G_I2C_ADDR_OUT, CH422G_BIT_BACKLIGHT | CH422G_BIT_LCD_EN | CH422G_BIT_LCD_RST);
+    ESP_LOGI(TAG, "Touch reset asserted (LOW)");
+
+    // Step 3: Wait 2ms (as per ESPHome)
+    vTaskDelay(pdMS_TO_TICKS(2));
+
+    // Step 4: Release Touch Reset HIGH (with INT still LOW)
     ch422g_write(CH422G_I2C_ADDR_OUT,
-                 CH422G_BIT_BACKLIGHT | CH422G_BIT_LCD_RST |
-                 CH422G_BIT_TOUCH_RST | CH422G_BIT_LCD_EN);
+                 CH422G_BIT_BACKLIGHT | CH422G_BIT_LCD_EN |
+                 CH422G_BIT_LCD_RST | CH422G_BIT_TOUCH_RST);
+    ESP_LOGI(TAG, "Touch reset released (HIGH), INT still LOW -> addr 0x5D");
+
+    // Step 5: Wait 56ms (5+50+1 as per ESPHome) for GT911 to initialize
+    vTaskDelay(pdMS_TO_TICKS(60));
+
+    // Step 6: Set INT pin back to INPUT mode
+    io_conf.mode = GPIO_MODE_INPUT;
+    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;  // ESPHome uses no pullup
+    gpio_config(&io_conf);
+    ESP_LOGI(TAG, "INT pin (GPIO4) set back to INPUT");
+
+    ESP_LOGI(TAG, "CH422G + GT911 reset sequence complete");
+
+    // Scan I2C bus to verify GT911 at 0x5D
+    i2c_scan();
 }
 
 static void i2c_init(void)
@@ -67,10 +129,11 @@ static void i2c_init(void)
         .scl_io_num = TOUCH_I2C_SCL,
         .sda_pullup_en = GPIO_PULLUP_ENABLE,
         .scl_pullup_en = GPIO_PULLUP_ENABLE,
-        .master.clk_speed = 400000,
+        .master.clk_speed = 100000,  // 100kHz as per ESPHome config
     };
     i2c_param_config(I2C_NUM_0, &conf);
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
+    ESP_LOGI(TAG, "I2C initialized at 100kHz");
 }
 
 static void lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
@@ -127,8 +190,8 @@ esp_err_t display_init(void)
         },
         .data_width = 16,
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
-        .num_fbs = 1,
-        .bounce_buffer_size_px = LCD_WIDTH * 10,
+        .num_fbs = 2,
+        .bounce_buffer_size_px = LCD_WIDTH * 20,
         .psram_trans_align = 64,
         .hsync_gpio_num = LCD_PIN_HSYNC,
         .vsync_gpio_num = LCD_PIN_VSYNC,
