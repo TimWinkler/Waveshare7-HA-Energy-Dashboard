@@ -15,7 +15,6 @@
 #include "esp_netif.h"
 #include "esp_sntp.h"
 #include "nvs_flash.h"
-#include "lwip/apps/sntp.h"
 #include "lvgl.h"
 
 #include "config.h"
