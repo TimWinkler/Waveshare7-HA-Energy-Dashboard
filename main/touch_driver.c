@@ -25,7 +25,13 @@ static void touch_read_cb(lv_indev_drv_t *drv, lv_indev_data_t *data)
     uint16_t strength[1];
     uint8_t count = 0;
 
-    if (s_touch && esp_lcd_touch_get_coordinates(s_touch, x, y, strength, &count, 1) == ESP_OK && count > 0) {
+    // Read fresh touch data from the controller
+    esp_lcd_touch_read_data(s_touch);
+
+    // Get touch coordinates
+    bool touched = esp_lcd_touch_get_coordinates(s_touch, x, y, strength, &count, 1);
+
+    if (touched && count > 0) {
         data->point.x = x[0];
         data->point.y = y[0];
         data->state = LV_INDEV_STATE_PRESSED;

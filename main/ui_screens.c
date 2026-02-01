@@ -578,7 +578,9 @@ void ui_create_screen_forecast(void)
 {
     screen_forecast = lv_obj_create(NULL);
     lv_obj_add_style(screen_forecast, &style_screen_bg, 0);
+    lv_obj_clear_flag(screen_forecast, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_add_event_cb(screen_forecast, screen_gesture_cb, LV_EVENT_GESTURE, NULL);
+    lv_obj_clear_flag(screen_forecast, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
     lv_obj_t *current_card = create_metric_card(screen_forecast, 16, 50, 768, 150);
 
