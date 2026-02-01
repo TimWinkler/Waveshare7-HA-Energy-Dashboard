@@ -4,7 +4,7 @@ An ESP-IDF powered energy monitoring dashboard for the **Waveshare ESP32-S3-Touc
 
 [![Build](https://github.com/TimWinkler/Waveshare7-HA-Energy-Dashboard/actions/workflows/build.yml/badge.svg)](https://github.com/TimWinkler/Waveshare7-HA-Energy-Dashboard/actions/workflows/build.yml)
 ![ESP-IDF](https://img.shields.io/badge/ESP--IDF-v5.4-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Hardware](https://img.shields.io/badge/Hardware-ESP32--S3-red)
 
 ## Overview
@@ -222,7 +222,9 @@ Default rates in `main/ui_screens.c`:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under the **GNU General Public License v3.0** - see [LICENSE](LICENSE) for details.
+
+This means any derivative work must also be open source under GPL v3.
 
 ## Acknowledgments
 
