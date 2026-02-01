@@ -148,9 +148,6 @@ esp_err_t display_init(void)
     ESP_ERROR_CHECK(esp_lcd_panel_reset(s_panel));
     ESP_ERROR_CHECK(esp_lcd_panel_init(s_panel));
 
-    // Fix color inversion for Waveshare 7" display
-    ESP_ERROR_CHECK(esp_lcd_panel_invert_color(s_panel, false));
-
     // Initialize LVGL
     lv_init();
 
