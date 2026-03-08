@@ -40,11 +40,11 @@
 #define TOPIC_WATER_DAILY       "ha/sensor/water_water_usage/state"
 #define TOPIC_WATER_TOTAL       "ha/sensor/water_total_water_usage/state"
 
-// Year-to-Date (YTD) values from utility_meter sensors
-#define TOPIC_GRID_YTD          "ha/sensor/yearly_grid_energy/state"
-#define TOPIC_GAS_YTD           "ha/sensor/yearly_gas/state"
-#define TOPIC_SOLAR_YTD         "ha/sensor/yearly_solar_energy/state"
-#define TOPIC_WATER_YTD         "ha/sensor/yearly_water/state"
+// Year-to-Date (YTD) values from input_number helpers (updated by automation from long-term statistics)
+#define TOPIC_GRID_YTD          "ha/input_number/grid_ytd/state"
+#define TOPIC_GAS_YTD           "ha/input_number/gas_ytd/state"
+#define TOPIC_SOLAR_YTD         "ha/input_number/solar_ytd/state"
+#define TOPIC_WATER_YTD         "ha/input_number/water_ytd/state"
 
 // Extended weather data
 #define TOPIC_WEATHER_PRESSURE  "ha/sensor/weather_pressure/state"
